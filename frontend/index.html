@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroVision - Accurate Astrology & Numerology</title>
+    <meta name="description" content="Get your accurate daily horoscope, birth chart, and numerology reading. Real astronomical calculations, not random predictions.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .cinzel { font-family: 'Cinzel', serif; }
+        .inter { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .zodiac-card { transition: all 0.3s ease; cursor: pointer; }
+        .zodiac-card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(138, 43, 226, 0.3); }
+        .mystical-glow { box-shadow: 0 0 30px rgba(138, 43, 226, 0.5); }
+    </style>
+</head>
+<body class="min-h-screen text-white inter">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="glass rounded-2xl p-8 mb-8 text-center mystical-glow">
+            <h1 class="text-6xl font-bold mb-3 cinzel">✨ AstroVision ✨</h1>
+            <p class="text-2xl cinzel mb-2">Accurate Astrology & Numerology</p>
+            <p class="text-gray-300">Based on Real Astronomical Calculations</p>
+        </header>
+
+        <!-- Main Tabs -->
+        <div class="flex justify-center gap-4 mb-8 flex-wrap">
+            <button onclick="showTab('horoscope')" id="tab-horoscope" class="px-6 py-3 bg-purple-600 rounded-xl font-semibold hover:bg-purple-700 transition">
+                🌙 Daily Horoscope
+            </button>
+            <button onclick="showTab('birthchart')" id="tab-birthchart" class="px-6 py-3 glass rounded-xl font-semibold hover:bg-white hover:bg-opacity-10 transition">
+                ⭐ Birth Chart
+            </button>
+            <button onclick="showTab('numerology')" id="tab-numerology" class="px-6 py-3 glass rounded-xl font-semibold hover:bg-white hover:bg-opacity-10 transition">
+                🔢 Numerology
+            </button>
+            <button onclick="showTab('compatibility')" id="tab-compatibility" class="px-6 py-3 glass rounded-xl font-semibold hover:bg-white hover:bg-opacity-10 transition">
+                💕 Compatibility
+            </button>
+        </div>
+
+        <!-- Daily Horoscope Tab -->
+        <div id="content-horoscope" class="tab-content">
+            <div class="glass rounded-2xl p-8 mb-8">
+                <h2 class="text-3xl font-bold mb-6 cinzel text-center">Select Your Zodiac Sign</h2>
+                
+                <div class="grid md:grid-cols-4 lg:grid-cols-6 gap-4" id="zodiacSigns">
+                    <!-- Zodiac signs will be inserted here -->
+                </div>
+            </div>
+
+            <div id="horoscopeResult" class="hidden glass rounded-2xl p-8 mystical-glow">
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4" id="signIcon"></div>
+                    <h3 class="text-4xl font-bold cinzel mb-2" id="signName"></h3>
+                    <p class="text-gray-300" id="signElement"></p>
+                    <p class="text-sm text-gray-400 mt-2" id="horoscopeDate"></p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white bg-opacity-5 rounded-xl p-6">
+                        <h4 class="text-xl font-semibold mb-3 cinzel">Today's Guidance</h4>
+                        <p class="text-lg leading-relaxed" id="horoscopeText"></p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-white bg-opacity-5 rounded-xl p-4">
+                            <div class="text-sm text-gray-400 mb-2">Lucky Color</div>
+                            <div class="text-2xl font-bold" id="luckyColor"></div>
+                        </div>
+                        <div class="bg-white bg-opacity-5 rounded-xl p-4">
+                            <div class="text-sm text-gray-400 mb-2">Lucky Numbers</div>
+                            <div class="text-2xl font-bold font-mono" id="luckyNumbers"></div>
+                        </div>
+                        <div class="bg-white bg-opacity-5 rounded-xl p-4">
+                            <div class="text-sm text-gray-400 mb-2">Best Match Today</div>
+                            <div class="text-2xl font-bold" id="bestMatch"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Birth Chart Tab -->
+        <div id="content-birthchart" class="tab-content hidden">
+            <div class="glass rounded-2xl p-8">
+                <h2 class="text-3xl font-bold mb-6 cinzel text-center">Calculate Your Birth Chart</h2>
+                
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm mb-2">Birth Date</label>
+                            <input type="date" id="birthDate" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-2">Birth Time</label>
+                            <input type="time" id="birthTime" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm mb-2">Latitude</label>
+                            <input type="number" step="0.01" id="birthLat" placeholder="40.7128" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-2">Longitude</label>
+                            <input type="number" step="0.01" id="birthLng" placeholder="-74.0060" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                        </div>
+                    </div>
+
+                    <button onclick="calculateBirthChart()" class="w-full px-8 py-4 bg-purple-600 rounded-xl font-semibold hover:bg-purple-700 transition text-lg">
+                        ⭐ Calculate Birth Chart
+                    </button>
+                </div>
+
+                <div id="birthChartResult" class="hidden mt-8">
+                    <!-- Birth chart results will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerology Tab -->
+        <div id="content-numerology" class="tab-content hidden">
+            <div class="glass rounded-2xl p-8">
+                <h2 class="text-3xl font-bold mb-6 cinzel text-center">Numerology Reading</h2>
+                
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <div>
+                        <label class="block text-sm mb-2">Full Name</label>
+                        <input type="text" id="fullName" placeholder="John Doe" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm mb-2">Birth Date</label>
+                        <input type="date" id="numBirthDate" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                    </div>
+
+                    <button onclick="calculateNumerology()" class="w-full px-8 py-4 bg-purple-600 rounded-xl font-semibold hover:bg-purple-700 transition text-lg">
+                        🔢 Calculate Numbers
+                    </button>
+                </div>
+
+                <div id="numerologyResult" class="hidden mt-8">
+                    <!-- Numerology results will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Compatibility Tab -->
+        <div id="content-compatibility" class="tab-content hidden">
+            <div class="glass rounded-2xl p-8">
+                <h2 class="text-3xl font-bold mb-6 cinzel text-center">Zodiac Compatibility</h2>
+                
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm mb-2">Your Sign</label>
+                            <select id="sign1" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                                <option value="">Select sign...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-2">Partner's Sign</label>
+                            <select id="sign2" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                                <option value="">Select sign...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateCompatibility()" class="w-full px-8 py-4 bg-purple-600 rounded-xl font-semibold hover:bg-purple-700 transition text-lg">
+                        💕 Check Compatibility
+                    </button>
+                </div>
+
+                <div id="compatibilityResult" class="hidden mt-8">
+                    <!-- Compatibility results will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-sm text-gray-400 cinzel">
+            <p>✨ Calculations based on astronomical data & ancient wisdom ✨</p>
+            <p class="mt-2">The stars incline, but do not compel</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8003' 
+            : 'https://astrovision-production.up.railway.app';
+
+        const ZODIAC_SIGNS = [
+            { name: 'Aries', icon: '♈', emoji: '🐏', dates: 'Mar 21 - Apr 19' },
+            { name: 'Taurus', icon: '♉', emoji: '🐂', dates: 'Apr 20 - May 20' },
+            { name: 'Gemini', icon: '♊', emoji: '👥', dates: 'May 21 - Jun 20' },
+            { name: 'Cancer', icon: '♋', emoji: '🦀', dates: 'Jun 21 - Jul 22' },
+            { name: 'Leo', icon: '♌', emoji: '🦁', dates: 'Jul 23 - Aug 22' },
+            { name: 'Virgo', icon: '♍', emoji: '👩', dates: 'Aug 23 - Sep 22' },
+            { name: 'Libra', icon: '♎', emoji: '⚖️', dates: 'Sep 23 - Oct 22' },
+            { name: 'Scorpio', icon: '♏', emoji: '🦂', dates: 'Oct 23 - Nov 21' },
+            { name: 'Sagittarius', icon: '♐', emoji: '🏹', dates: 'Nov 22 - Dec 21' },
+            { name: 'Capricorn', icon: '♑', emoji: '🐐', dates: 'Dec 22 - Jan 19' },
+            { name: 'Aquarius', icon: '♒', emoji: '🏺', dates: 'Jan 20 - Feb 18' },
+            { name: 'Pisces', icon: '♓', emoji: '🐟', dates: 'Feb 19 - Mar 20' }
+        ];
+
+        // Initialize
+        window.addEventListener('load', () => {
+            renderZodiacSigns();
+            populateSignSelects();
+        });
+
+        function renderZodiacSigns() {
+            const container = document.getElementById('zodiacSigns');
+            
+            container.innerHTML = ZODIAC_SIGNS.map(sign => `
+                <div class="zodiac-card glass rounded-xl p-4 text-center" onclick="loadHoroscope('${sign.name}')">
+                    <div class="text-4xl mb-2">${sign.emoji}</div>
+                    <div class="font-bold cinzel">${sign.name}</div>
+                    <div class="text-xs text-gray-400 mt-1">${sign.dates}</div>
+                </div>
+            `).join('');
+        }
+
+        function populateSignSelects() {
+            const selects = ['sign1', 'sign2'];
+            selects.forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '<option value="">Select sign...</option>' +
+                    ZODIAC_SIGNS.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+            });
+        }
+
+        async function loadHoroscope(sign) {
+            try {
+                const response = await fetch(`${API_URL}/api/horoscope/daily?sign=${sign}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const signInfo = ZODIAC_SIGNS.find(s => s.name === sign);
+                    
+                    document.getElementById('signIcon').textContent = signInfo.emoji;
+                    document.getElementById('signName').textContent = sign;
+                    document.getElementById('signElement').textContent = `${signInfo.icon} ${signInfo.dates}`;
+                    document.getElementById('horoscopeDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    document.getElementById('horoscopeText').textContent = data.horoscope;
+                    document.getElementById('luckyColor').textContent = data.lucky_color;
+                    document.getElementById('luckyNumbers').textContent = data.lucky_numbers.join(', ');
+                    document.getElementById('bestMatch').textContent = data.compatibility;
+                    
+                    document.getElementById('horoscopeResult').classList.remove('hidden');
+                    document.getElementById('horoscopeResult').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error('Error loading horoscope:', error);
+                alert('Error loading horoscope. Please try again.');
+            }
+        }
+
+        async function calculateBirthChart() {
+            const date = document.getElementById('birthDate').value;
+            const time = document.getElementById('birthTime').value;
+            const lat = document.getElementById('birthLat').value;
+            const lng = document.getElementById('birthLng').value;
+
+            if (!date || !time || !lat || !lng) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/birth-chart?date=${date}&time=${time}&lat=${lat}&lng=${lng}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const resultDiv = document.getElementById('birthChartResult');
+                    resultDiv.innerHTML = `
+                        <div class="bg-white bg-opacity-5 rounded-xl p-6 space-y-6">
+                            <div class="text-center">
+                                <h3 class="text-3xl font-bold cinzel mb-4">Your Birth Chart</h3>
+                            </div>
+
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="bg-purple-600 bg-opacity-30 rounded-xl p-4 text-center">
+                                    <div class="text-sm text-gray-300 mb-2">Sun Sign</div>
+                                    <div class="text-3xl font-bold cinzel">${data.sun_sign.sign}</div>
+                                    <div class="text-sm text-gray-400 mt-2">${data.sun_sign.element}</div>
+                                </div>
+                                <div class="bg-blue-600 bg-opacity-30 rounded-xl p-4 text-center">
+                                    <div class="text-sm text-gray-300 mb-2">Moon Sign</div>
+                                    <div class="text-3xl font-bold cinzel">${data.moon_sign.sign}</div>
+                                    <div class="text-sm text-gray-400 mt-2">${data.moon_sign.element}</div>
+                                </div>
+                                <div class="bg-pink-600 bg-opacity-30 rounded-xl p-4 text-center">
+                                    <div class="text-sm text-gray-300 mb-2">Rising Sign</div>
+                                    <div class="text-3xl font-bold cinzel">${data.rising_sign.sign}</div>
+                                    <div class="text-sm text-gray-400 mt-2">${data.rising_sign.element}</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white bg-opacity-5 rounded-xl p-6">
+                                <h4 class="text-xl font-semibold mb-3 cinzel">Interpretation</h4>
+                                <p class="text-gray-200 leading-relaxed">${data.interpretation}</p>
+                            </div>
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error('Error calculating birth chart:', error);
+                alert('Error calculating birth chart. Please try again.');
+            }
+        }
+
+        async function calculateNumerology() {
+            const name = document.getElementById('fullName').value;
+            const birthdate = document.getElementById('numBirthDate').value;
+
+            if (!name || !birthdate) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/numerology?name=${encodeURIComponent(name)}&birthdate=${birthdate}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const resultDiv = document.getElementById('numerologyResult');
+                    resultDiv.innerHTML = `
+                        <div class="bg-white bg-opacity-5 rounded-xl p-6 space-y-4">
+                            <div class="text-center">
+                                <h3 class="text-3xl font-bold cinzel mb-2">Your Numerology Profile</h3>
+                                <p class="text-gray-400">${name}</p>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-purple-600 bg-opacity-20 rounded-xl p-4">
+                                    <div class="text-sm text-gray-300 mb-2">Life Path Number</div>
+                                    <div class="text-5xl font-bold cinzel mb-2">${data.life_path_number.number}</div>
+                                    <div class="text-sm text-gray-200">${data.life_path_number.meaning}</div>
+                                </div>
+                                <div class="bg-blue-600 bg-opacity-20 rounded-xl p-4">
+                                    <div class="text-sm text-gray-300 mb-2">Expression Number</div>
+                                    <div class="text-5xl font-bold cinzel mb-2">${data.expression_number.number}</div>
+                                    <div class="text-sm text-gray-200">${data.expression_number.meaning}</div>
+                                </div>
+                                <div class="bg-pink-600 bg-opacity-20 rounded-xl p-4">
+                                    <div class="text-sm text-gray-300 mb-2">Soul Urge Number</div>
+                                    <div class="text-5xl font-bold cinzel mb-2">${data.soul_urge_number.number}</div>
+                                    <div class="text-sm text-gray-200">${data.soul_urge_number.meaning}</div>
+                                </div>
+                                <div class="bg-indigo-600 bg-opacity-20 rounded-xl p-4">
+                                    <div class="text-sm text-gray-300 mb-2">Personality Number</div>
+                                    <div class="text-5xl font-bold cinzel mb-2">${data.personality_number.number}</div>
+                                    <div class="text-sm text-gray-200">${data.personality_number.meaning}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error('Error calculating numerology:', error);
+                alert('Error calculating numerology. Please try again.');
+            }
+        }
+
+        async function calculateCompatibility() {
+            const sign1 = document.getElementById('sign1').value;
+            const sign2 = document.getElementById('sign2').value;
+
+            if (!sign1 || !sign2) {
+                alert('Please select both signs');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/compatibility?sign1=${sign1}&sign2=${sign2}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const resultDiv = document.getElementById('compatibilityResult');
+                    const score = data.compatibility_score;
+                    const color = score >= 75 ? 'green' : score >= 50 ? 'yellow' : 'red';
+                    
+                    resultDiv.innerHTML = `
+                        <div class="bg-white bg-opacity-5 rounded-xl p-8 text-center">
+                            <h3 class="text-3xl font-bold cinzel mb-4">${sign1} & ${sign2}</h3>
+                            
+                            <div class="mb-6">
+                                <div class="text-7xl font-bold cinzel mb-2" style="color: ${color === 'green' ? '#10b981' : color === 'yellow' ? '#fbbf24' : '#ef4444'}">
+                                    ${score}%
+                                </div>
+                                <div class="text-2xl font-semibold">${data.rating}</div>
+                            </div>
+
+                            <div class="bg-white bg-opacity-5 rounded-xl p-6">
+                                <p class="text-lg leading-relaxed text-gray-200">${data.analysis}</p>
+                            </div>
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error('Error calculating compatibility:', error);
+                alert('Error calculating compatibility. Please try again.');
+            }
+        }
+
+        function showTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('bg-purple-600');
+                btn.classList.add('glass');
+            });
+            
+            // Show selected tab
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            
+            // Highlight selected button
+            const btn = document.getElementById(`tab-${tab}`);
+            btn.classList.add('bg-purple-600');
+            btn.classList.remove('glass');
+        }
+    </script>
+</body>
+</html>
