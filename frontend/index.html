@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AstroVision - Accurate Astrology & Numerology</title>
-    <meta name="description" content="Get your accurate daily horoscope, birth chart, and numerology reading. Real astronomical calculations, not random predictions.">
+    <title>AstroVision - Free Daily Horoscope, Birth Chart & Numerology Calculator</title>
+    <meta name="description" content="Get your free daily horoscope, accurate birth chart, and numerology reading. All 12 zodiac signs with real astronomical calculations.">
+    <meta name="keywords" content="daily horoscope, birth chart calculator, numerology, zodiac signs, astrology, free horoscope">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <style>
         .cinzel { font-family: 'Cinzel', serif; }
         .inter { font-family: 'Inter', sans-serif; }
@@ -15,8 +23,25 @@
         .zodiac-card { transition: all 0.3s ease; cursor: pointer; }
         .zodiac-card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(138, 43, 226, 0.3); }
         .mystical-glow { box-shadow: 0 0 30px rgba(138, 43, 226, 0.5); }
+        .trend-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        #map { height: 300px; border-radius: 12px; }
+        .location-input {
+            transition: all 0.3s ease;
+        }
+        .location-input:focus {
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
     </style>
 </head>
+
 <body class="min-h-screen text-white inter">
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
@@ -89,26 +114,52 @@
             <div class="glass rounded-2xl p-8">
                 <h2 class="text-3xl font-bold mb-6 cinzel text-center">Calculate Your Birth Chart</h2>
                 
-                <div class="max-w-2xl mx-auto space-y-4">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <!-- Address Search -->
+                    <div>
+                        <label class="block text-sm mb-2 font-semibold">🌍 Birth Location</label>
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="locationSearch" 
+                                placeholder="Enter city, address, or place of birth (e.g., New York, NY)" 
+                                class="location-input w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none text-lg"
+                                onkeypress="if(event.key==='Enter') searchLocation()"
+                            />
+                            <button onclick="searchLocation()" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition">
+                                🔍 Search
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Search for any city or address worldwide</p>
+                    </div>
+
+                    <!-- Map -->
+                    <div>
+                        <div id="map" class="border border-gray-600"></div>
+                        <p class="text-xs text-gray-400 mt-2">Click on the map to select exact location</p>
+                    </div>
+
+                    <!-- Date & Time -->
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm mb-2">Birth Date</label>
+                            <label class="block text-sm mb-2 font-semibold">📅 Birth Date</label>
                             <input type="date" id="birthDate" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm mb-2">Birth Time</label>
+                            <label class="block text-sm mb-2 font-semibold">🕐 Birth Time</label>
                             <input type="time" id="birthTime" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
                         </div>
                     </div>
 
+                    <!-- Hidden Coordinates (auto-filled from map) -->
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm mb-2">Latitude</label>
-                            <input type="number" step="0.01" id="birthLat" placeholder="40.7128" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                            <label class="block text-sm mb-2 text-gray-400">Latitude (auto-filled)</label>
+                            <input type="number" step="0.0001" id="birthLat" readonly class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-5 border border-gray-700 outline-none text-gray-400">
                         </div>
                         <div>
-                            <label class="block text-sm mb-2">Longitude</label>
-                            <input type="number" step="0.01" id="birthLng" placeholder="-74.0060" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-gray-600 outline-none">
+                            <label class="block text-sm mb-2 text-gray-400">Longitude (auto-filled)</label>
+                            <input type="number" step="0.0001" id="birthLng" readonly class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-5 border border-gray-700 outline-none text-gray-400">
                         </div>
                     </div>
 
@@ -209,11 +260,79 @@
             { name: 'Pisces', icon: '♓', emoji: '🐟', dates: 'Feb 19 - Mar 20' }
         ];
 
+        let map;
+        let marker;
+
         // Initialize
         window.addEventListener('load', () => {
             renderZodiacSigns();
             populateSignSelects();
+            initMap();
         });
+
+        function initMap() {
+            // Initialize map centered on world
+            map = L.map('map').setView([20, 0], 2);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Add click event to map
+            map.on('click', function(e) {
+                setLocation(e.latlng.lat, e.latlng.lng);
+            });
+        }
+
+        async function searchLocation() {
+            const query = document.getElementById('locationSearch').value.trim();
+            if (!query) {
+                alert('Please enter a location');
+                return;
+            }
+
+            try {
+                // Use Nominatim API for geocoding
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                const results = await response.json();
+
+                if (results.length === 0) {
+                    alert('Location not found. Try a different search term.');
+                    return;
+                }
+
+                // Use first result
+                const location = results[0];
+                const lat = parseFloat(location.lat);
+                const lng = parseFloat(location.lon);
+
+                setLocation(lat, lng);
+                
+                // Zoom to location
+                map.setView([lat, lng], 13);
+
+            } catch (error) {
+                console.error('Geocoding error:', error);
+                alert('Error searching location. Please try again.');
+            }
+        }
+
+        function setLocation(lat, lng) {
+            // Update input fields
+            document.getElementById('birthLat').value = lat.toFixed(4);
+            document.getElementById('birthLng').value = lng.toFixed(4);
+
+            // Remove old marker if exists
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            // Add new marker
+            marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(`Birth Location<br>Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`).openPopup();
+        }
 
         function renderZodiacSigns() {
             const container = document.getElementById('zodiacSigns');
@@ -269,7 +388,7 @@
             const lng = document.getElementById('birthLng').value;
 
             if (!date || !time || !lat || !lng) {
-                alert('Please fill in all fields');
+                alert('Please fill in all fields and select a location on the map');
                 return;
             }
 
